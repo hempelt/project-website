@@ -1,7 +1,8 @@
-import Image from "next/image";
-import { Geist, Geist_Mono } from "next/font/google";
-import { getSession, signOut } from "next-auth/react";
+import Image from "next/image"; // Optimierte Bildkomponente von Next.js
+import { Geist, Geist_Mono } from "next/font/google"; // Google Fonts für schöne Schriftarten
+import { getSession, signOut } from "next-auth/react"; // NextAuth-Funktionen für Authentifizierung
 
+// Schriftarten laden und mit CSS-Variablen versehen
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -12,19 +13,21 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-// Authentifizierungsprüfung (wird auf dem Server ausgeführt)
+// Serverseitige Funktion, die prüft, ob ein Nutzer eingeloggt ist
 export async function getServerSideProps(context) {
   const session = await getSession(context);
 
+  // Wenn keine Sitzung vorhanden ist → Weiterleitung zur Login-Seite
   if (!session) {
     return {
       redirect: {
-        destination: "/login", // eigene Login-Seite
+        destination: "/login",
         permanent: false,
       },
     };
   }
 
+  // Falls eingeloggt → Nutzerinformationen an Komponente übergeben
   return {
     props: {
       user: session.user,
@@ -32,12 +35,20 @@ export async function getServerSideProps(context) {
   };
 }
 
+// Startseite (nach erfolgreichem Login)
 export default function Home({ user }) {
   return (
     <div
-      className={`${geistSans.className} ${geistMono.className} grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]`}
+      className={`
+        ${geistSans.className} ${geistMono.className}
+        grid grid-rows-[20px_1fr_20px] items-center justify-items-center
+        min-h-screen p-8 pb-20 gap-16 sm:p-20
+        font-[family-name:var(--font-geist-sans)]
+      `}
     >
+      {/* Hauptinhalt */}
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+        {/* Logo anzeigen */}
         <Image
           className="dark:invert"
           src="/FitnessTrackerLogo.png"
@@ -47,11 +58,13 @@ export default function Home({ user }) {
           priority
         />
 
-        <p className="text-sm">Willkommen, {user.name}</p>
+        {/* Begrüßung mit Benutzername */}
+        <p className="text-xl">Willkommen, {user.name}</p>
 
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
+        {/* Anwendungsbeschreibung in einer nummerierten Liste */}
+        <ol className="list-inside list-decimal text-xl/8 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
           <li className="mb-2 tracking-[-.01em]">
-            Check in: Mach den Check in und erstelle einen neuen Eintrag für heute
+            Check in: Mach den Check in und erstelle einen neuen Eintrag
           </li>
           <li className="mb-2 tracking-[-.01em]">
             Daten: Schau dir deine Daten in einer Tabelle an und lösche Einträge
@@ -61,7 +74,9 @@ export default function Home({ user }) {
           </li>
         </ol>
 
+        {/* Navigationsbuttons zu anderen Seiten */}
         <div className="flex gap-4 items-center flex-col sm:flex-row">
+          {/* Button zur Check-in-Seite */}
           <a
             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
             href="/Check_in"
@@ -76,6 +91,7 @@ export default function Home({ user }) {
             Check in
           </a>
 
+          {/* Button zur Datenseite */}
           <a
             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
             href="/daten"
@@ -90,6 +106,7 @@ export default function Home({ user }) {
             Daten
           </a>
 
+          {/* Button zum Dashboard */}
           <a
             className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
             href="/dashboard"
@@ -105,9 +122,10 @@ export default function Home({ user }) {
           </a>
         </div>
 
+        {/* Logout-Button */}
         <button
-          onClick={() => signOut({ callbackUrl: "/login" })}
-          className="mt-8 text-sm underline hover:text-red-500"
+          onClick={() => signOut({ callbackUrl: "/login" })} // Bei Klick: Ausloggen und Weiterleitung zur Login-Seite
+          className="mt-8 text-xl underline hover:text-red-500"
         >
           Logout
         </button>
